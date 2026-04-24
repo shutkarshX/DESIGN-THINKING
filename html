@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>EcoRewards – Smart Campus Initiative</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-900: #0f2b14;
+    --green-800: #1a3d1f;
+    --green-700: #235e2c;
+    --green-600: #2d7a3a;
+    --green-500: #3d9e4a;
+    --green-400: #4caf50;
+    --green-200: #c5e0c5;
+    --green-100: #eaf4eb;
+    --green-50:  #f0f7f0;
+    --text-primary: #0f2b14;
+    --text-secondary: #5a7a5a;
+    --text-muted: #7a9a7a;
+    --border: #dde8dd;
+    --white: #ffffff;
+    --red: #e24b4a;
+    --blue: #4a90d9;
+    --amber: #c8a87a;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.1);
+    --shadow-green: 0 4px 16px rgba(45,122,58,0.3);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Instrument Sans', sans-serif; background: var(--green-50); min-height: 100vh; }
+  h1,h2,h3,.display { font-family: 'Syne', sans-serif; }
+  
+  #app { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; background: var(--green-50); box-shadow: 0 0 60px rgba(0,0,0,0.12); }
+
+  /* HEADER */
+  .header { background: var(--white); padding: 14px 20px 12px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--green-100); }
+  .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; }
+  .logo-icon { width: 36px; height: 36px; background: var(--green-600); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: var(--green-900); letter-spacing: -0.5px; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .pts-pill { background: var(--green-100); color: var(--green-800); padding: 6px 14px; border-radius: 50px; font-size: 13px; font-weight: 600; }
+  .avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--green-600); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: white; cursor: pointer; border: 2px solid var(--green-200); }
+
+  /* BOTTOM NAV */
+  .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--white); border-top: 1px solid var(--green-100); display: flex; justify-content: space-around; padding: 8px 4px 14px; z-index: 100; }
+  .nav-btn { background: none; border: none; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; font-family: 'Instrument Sans', sans-serif; color: var(--text-muted); cursor: pointer; transition: color 0.2s; border-radius: 8px; min-width: 52px; font-weight: 500; }
+  .nav-btn.active { color: var(--green-600); font-weight: 700; }
+  .nav-btn .nav-icon { font-size: 20px; }
+
+  /* MAIN */
+  .page-content { min-height: calc(100vh - 130px); padding-bottom: 80px; }
+  .page { display: none; padding: 0 16px; }
+  .page.active { display: block; animation: slideUp 0.35s ease; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* BUTTONS */
+  .btn { border: none; cursor: pointer; font-family: 'Instrument Sans', sans-serif; font-weight: 600; letter-spacing: 0.3px; transition: all 0.2s; border-radius: 50px; padding: 13px 24px; font-size: 15px; }
+  .btn-primary { background: var(--green-600); color: white; }
+  .btn-primary:hover { background: var(--green-700); transform: translateY(-1px); box-shadow: var(--shadow-green); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-outline { background: transparent; border: 2px solid var(--green-600); color: var(--green-600); }
+  .btn-outline:hover { background: var(--green-600); color: white; }
+  .btn-sm { padding: 7px 14px; font-size: 12px; border-radius: 8px; }
+  .btn-danger { background: var(--red); color: white; }
+  .btn-pulse { animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(45,122,58,0.4)} 50%{box-shadow:0 0 0 10px rgba(45,122,58,0)} }
+  .btn-white { background: white; color: var(--green-600); }
+
+  /* CARDS */
+  .card { background: var(--white); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm); }
+
+  /* FORM */
+  .field-label { font-size: 11px; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.8px; }
+  input[type=text], input[type=email], input[type=password], input[type=number], select {
+    width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-md); font-size: 15px; font-family: inherit; background: #f8faf8; outline: none; transition: border 0.2s, background 0.2s;
+  }
+  input:focus, select:focus { border-color: var(--green-600); background: white; }
+  .field-group { margin-bottom: 16px; }
+
+  /* PROGRESS */
+  .progress-bar { height: 8px; background: #e0ece0; border-radius: 50px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green-600), var(--green-400)); border-radius: 50px; transition: width 0.8s ease; }
+
+  /* TOAST */
+  .toast { position: fixed; top: 68px; left: 50%; transform: translateX(-50%); color: white; padding: 12px 22px; border-radius: 50px; font-size: 14px; font-weight: 600; z-index: 999; white-space: nowrap; max-width: 92vw; text-align: center; box-shadow: var(--shadow-md); animation: slideUp 0.3s ease; pointer-events: none; font-family: 'Instrument Sans', sans-serif; }
+  .toast.success { background: var(--green-600); }
+  .toast.error { background: var(--red); }
+
+  /* HOME HERO */
+  .hero { background: linear-gradient(135deg, var(--green-900) 0%, var(--green-700) 60%, var(--green-500) 100%); border-radius: 0 0 36px 36px; margin: 0 -16px; padding: 36px 28px 44px; position: relative; overflow: hidden; }
+  .hero::before { content:''; position:absolute; top:-30px; right:-30px; width:160px; height:160px; background:rgba(255,255,255,0.05); border-radius:50%; }
+  .hero::after { content:''; position:absolute; bottom:-40px; left:-20px; width:120px; height:120px; background:rgba(255,255,255,0.04); border-radius:50%; }
+  .hero-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; color: #a8e6b0; margin-bottom: 10px; text-transform: uppercase; }
+  .hero h1 { font-size: 26px; font-weight: 800; color: white; line-height: 1.2; margin-bottom: 14px; }
+  .hero p { color: #c5e8c8; font-size: 14px; line-height: 1.7; margin-bottom: 26px; }
+  .hero-btns { display: flex; gap: 12px; }
+
+  /* STATS */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 24px 0; }
+  .stat-card { background: var(--white); border-radius: var(--radius-lg); padding: 16px 10px; text-align: center; box-shadow: var(--shadow-sm); }
+  .stat-icon { font-size: 22px; margin-bottom: 6px; }
+  .stat-val { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--green-900); }
+  .stat-lbl { font-size: 10px; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
+
+  /* TIP TICKER */
+  .tip-ticker { background: var(--green-100); border: 1px solid var(--green-200); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+  .tip-label { font-size: 9px; font-weight: 800; color: var(--green-600); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px; }
+  .tip-text { font-size: 13px; color: var(--green-900); font-weight: 500; }
+
+  /* LEADERBOARD */
+  .lb-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--green-50); }
+  .lb-row:last-child { border: none; }
+  .lb-medal { font-size: 20px; min-width: 28px; }
+  .lb-name { font-size: 14px; font-weight: 600; color: var(--green-900); }
+  .lb-sub { font-size: 11px; color: var(--text-muted); }
+  .lb-pts { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--green-600); }
+
+  /* WASTE CHIPS */
+  .waste-chips { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .waste-chip { border: 2px solid transparent; border-radius: 16px; padding: 14px; cursor: pointer; transition: all 0.2s; background: var(--green-50); text-align: center; }
+  .waste-chip.selected { border-color: var(--green-600); background: var(--green-100); }
+  .waste-chip-icon { font-size: 28px; margin-bottom: 4px; }
+  .waste-chip-name { font-size: 11px; font-weight: 700; color: var(--green-900); }
+  .waste-chip-desc { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  /* QUICK WEIGHT BTNS */
+  .weight-quick { display: flex; gap: 8px; margin-top: 12px; }
+  .wq-btn { flex: 1; background: var(--green-50); color: var(--green-600); border: 1.5px solid var(--green-200); border-radius: 8px; padding: 7px 0; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  .wq-btn.active, .wq-btn:hover { background: var(--green-600); color: white; border-color: var(--green-600); }
+
+  /* REWARDS */
+  .rewards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .reward-card { background: var(--white); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+  .reward-card.disabled { opacity: 0.6; }
+  .reward-icon { font-size: 36px; margin-bottom: 10px; }
+  .reward-name { font-size: 13px; font-weight: 700; color: var(--green-900); margin-bottom: 4px; line-height: 1.3; }
+  .reward-stock { font-size: 11px; color: var(--text-muted); margin-bottom: 12px; }
+  .reward-footer { display: flex; align-items: center; justify-content: space-between; }
+  .reward-pts { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--green-600); }
+  .low-stock-badge { position: absolute; top: 10px; right: 10px; background: #fff3e0; color: #e65100; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .cat-filter { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 20px; padding-bottom: 4px; scrollbar-width: none; }
+  .cat-filter::-webkit-scrollbar { display: none; }
+  .cat-btn { background: var(--white); color: var(--green-600); border: 1.5px solid var(--green-200); border-radius: 50px; padding: 6px 16px; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  .cat-btn.active { background: var(--green-600); color: white; border-color: var(--green-600); }
+
+  /* LEARN TABS */
+  .tab-bar { display: flex; gap: 6px; background: var(--white); padding: 6px; border-radius: var(--radius-lg); margin-bottom: 20px; }
+  .tab-btn { flex: 1; padding: 8px 0; border-radius: 10px; background: transparent; color: var(--text-muted); border: none; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  .tab-btn.active { background: var(--green-600); color: white; }
+
+  .guide-card { border-radius: var(--radius-lg); padding: 18px; margin-bottom: 16px; border: 1.5px solid; }
+  .guide-card-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .guide-card-img { width: 48px; height: 48px; background: rgba(255,255,255,0.7); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+  .guide-items { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+  .guide-item { font-size: 12px; color: #3a5a3a; background: rgba(255,255,255,0.7); border-radius: 8px; padding: 5px 10px; }
+  .guide-tip { background: rgba(255,255,255,0.8); border-radius: 10px; padding: 9px 13px; display: flex; gap: 8px; align-items: flex-start; font-size: 12px; color: #3a5a3a; line-height: 1.5; }
+
+  /* QUIZ */
+  .quiz-opt { padding: 12px 16px; border-radius: var(--radius-md); border: 2px solid var(--border); background: var(--white); cursor: pointer; text-align: left; font-size: 14px; transition: all 0.2s; width: 100%; margin-bottom: 9px; font-family: inherit; font-weight: 500; }
+  .quiz-opt:hover { border-color: var(--green-600); background: var(--green-50); }
+  .quiz-opt.correct { border-color: var(--green-600); background: var(--green-100); color: #1a5c25; }
+  .quiz-opt.wrong { border-color: var(--red); background: #fdf0f0; color: #a32d2d; }
+
+  /* PROFILE */
+  .profile-hero { background: linear-gradient(135deg, var(--green-900), var(--green-600)); border-radius: var(--radius-xl); padding: 24px; margin-bottom: 20px; }
+  .profile-avatar { width: 62px; height: 62px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.35); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 22px; color: white; }
+  .profile-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 18px; }
+  .profile-stat { background: rgba(255,255,255,0.12); border-radius: 12px; padding: 12px 8px; text-align: center; }
+  .profile-stat-val { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: white; }
+  .profile-stat-lbl { font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+
+  .log-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--green-50); }
+  .log-item:last-child { border: none; }
+
+  /* ADMIN */
+  .admin-user-card { background: var(--white); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+  .admin-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 12px; }
+
+  /* AUTH */
+  .auth-page { padding: 28px 0; }
+  .auth-emoji { font-size: 52px; margin-bottom: 14px; }
+  .auth-title { font-size: 24px; font-weight: 800; color: var(--green-900); margin-bottom: 8px; }
+  .auth-sub { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; }
+
+  /* MISC */
+  .section-title { font-size: 16px; font-weight: 800; color: var(--green-900); }
+  .text-muted { color: var(--text-muted); }
+  .text-sm { font-size: 13px; }
+  .mt-4 { margin-top: 16px; }
+  .mb-4 { margin-bottom: 16px; }
+  .mb-6 { margin-bottom: 24px; }
+  .flex-between { display: flex; align-items: center; justify-content: space-between; }
+  .full-btn { width: 100%; text-align: center; }
+  .mb-8 { margin-bottom: 8px; }
+  .section-spacer { margin-bottom: 24px; }
+  .how-pts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .how-pt-item { background: var(--green-50); border-radius: 10px; padding: 10px 12px; }
+  .how-pt-key { font-size: 11px; color: var(--text-muted); }
+  .how-pt-val { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; color: var(--green-600); margin-top: 2px; }
+
+  .success-screen { padding: 40px 0; text-align: center; }
+  .success-icon { width: 100px; height: 100px; background: var(--green-100); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 50px; margin: 0 auto 24px; }
+  .success-pts { font-family: 'Syne', sans-serif; font-size: 44px; font-weight: 800; color: var(--green-600); margin-bottom: 8px; }
+
+  .impact-card { border-radius: var(--radius-lg); padding: 18px; margin-bottom: 14px; display: flex; gap: 16px; align-items: flex-start; background: var(--white); box-shadow: var(--shadow-sm); }
+  .impact-icon-wrap { width: 52px; height: 52px; background: var(--green-100); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+
+  .today-log { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--white); border-radius: var(--radius-md); margin-bottom: 8px; border: 1px solid var(--green-100); }
+
+  .daily-limit-bar { margin-bottom: 20px; }
+
+  .sign-in-prompt { background: var(--green-100); border-radius: var(--radius-lg); padding: 22px; text-align: center; margin-bottom: 20px; }
+  .sign-in-prompt p { font-size: 14px; color: var(--green-900); margin-bottom: 14px; font-weight: 500; }
+
+  .quiz-complete { text-align: center; padding: 24px 0; }
+  .quiz-score { font-family: 'Syne', sans-serif; font-size: 40px; font-weight: 800; color: var(--green-600); margin: 8px 0; }
+
+  .no-auth-dispose { padding: 60px 8px; text-align: center; }
+
+  .tip-box { background: #fffbf0; border: 1px solid #f0e0aa; border-radius: 12px; padding: 12px 14px; margin-bottom: 20px; display: flex; gap: 10px; font-size: 12px; color: #7a5a1a; line-height: 1.5; }
+
+  .est-pts { font-size: 12px; font-weight: 700; color: var(--green-600); }
+  .max-hint { font-size: 11px; color: #aaa; }
+
+  .quick-tips-list { display: grid; gap: 10px; }
+  .quick-tip-item { display: flex; gap: 10px; align-items: flex-start; }
+  .tip-num { width: 24px; height: 24px; background: var(--green-100); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--green-600); flex-shrink: 0; }
+  .tip-num-text { font-size: 13px; color: #3a5a3a; line-height: 1.5; padding-top: 3px; }
+
+  .admin-log-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--white); border-radius: var(--radius-md); margin-bottom: 8px; font-size: 13px; }
+  .admin-stats { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .admin-stat-pill { flex: 1; min-width: 80px; background: var(--white); border-radius: var(--radius-lg); padding: 12px 8px; text-align: center; box-shadow: var(--shadow-sm); }
+  .admin-stat-val { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--green-600); }
+  .admin-stat-lbl { font-size: 10px; color: var(--text-muted); }
+
+  .reward-manage-item { background: var(--white); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow-sm); }
+  
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .impact-cta { background: linear-gradient(135deg, var(--green-900), var(--green-600)); border-radius: var(--radius-lg); padding: 22px; margin-top: 8px; }
+  .impact-cta h3 { color: white; font-size: 15px; font-weight: 800; margin-bottom: 8px; }
+  .impact-cta p { color: #c5e8c8; font-size: 13px; line-height: 1.7; }
+
+  .admin-access-btn { background: none; border: 1px solid #ddd; color: #aaa; font-size: 11px; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  .admin-access-btn:hover { border-color: var(--green-600); color: var(--green-600); }
+  
+  @media (max-width: 480px) { #app { box-shadow: none; } }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <a class="logo" onclick="navigate('home')">
+      <div class="logo-icon">🌿</div>
+      <span class="logo-text">EcoRewards</span>
+    </a>
+    <div class="header-right" id="header-right"></div>
+  </div>
+
+  <!-- PAGE CONTENT -->
+  <div class="page-content">
+
+    <!-- HOME PAGE -->
+    <div id="page-home" class="page active" style="padding:0 16px;">
+      <div class="hero mb-6" style="margin-bottom:0">
+        <div class="hero-eyebrow">Smart Campus Initiative</div>
+        <h1>Earn Rewards for<br>Saving the Planet 🌍</h1>
+        <p>Scan any bin QR code, log your waste disposal, and earn points for eco-friendly actions on campus.</p>
+        <div class="hero-btns" id="hero-btns"></div>
+      </div>
+
+      <div class="stats-grid" id="home-stats"></div>
+
+      <div class="tip-ticker" id="tip-ticker">
+        <span style="font-size:20px">💡</span>
+        <div>
+          <div class="tip-label">Eco Tip</div>
+          <div class="tip-text" id="tip-text"></div>
+        </div>
+      </div>
+
+      <div class="card section-spacer">
+        <div class="flex-between mb-4">
+          <h2 class="section-title">🏆 Top Recyclers</h2>
+          <span class="text-muted text-sm">This Month</span>
+        </div>
+        <div id="leaderboard"></div>
+      </div>
+
+      <div style="text-align:center;margin-bottom:20px">
+        <button class="admin-access-btn" id="admin-toggle-btn" onclick="toggleAdmin()">⚙️ Admin Access</button>
+      </div>
+    </div>
+
+    <!-- AUTH PAGE -->
+    <div id="page-auth" class="page" style="padding:24px 16px;">
+      <div class="auth-page" style="text-align:center">
+        <div class="auth-emoji">🌿</div>
+        <h1 class="auth-title" id="auth-title">Welcome Back!</h1>
+        <p class="auth-sub" id="auth-sub">Sign in to continue earning green points</p>
+      </div>
+      <div class="card mb-4">
+        <div id="auth-name-field" class="field-group" style="display:none">
+          <label class="field-label">Full Name</label>
+          <input type="text" id="auth-name" placeholder="Your name">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <input type="email" id="auth-email" placeholder="student@college.edu">
+        </div>
+        <div class="field-group" style="margin-bottom:22px">
+          <label class="field-label">Password</label>
+          <input type="password" id="auth-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')authSubmit()">
+        </div>
+        <button class="btn btn-primary full-btn" id="auth-submit-btn" onclick="authSubmit()">🔑 Sign In</button>
+      </div>
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:12px;color:#aaa;margin-bottom:12px">— or —</div>
+        <button onclick="demoLogin()" style="background:white;border:1.5px solid var(--border);border-radius:12px;padding:12px 20px;width:100%;font-size:14px;color:var(--green-600);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-family:inherit;">
+          <span style="font-size:18px;font-weight:800">G</span> Continue with Google (Demo)
+        </button>
+      </div>
+      <p style="text-align:center;font-size:13px;color:var(--text-muted)">
+        <span id="auth-toggle-text">Don't have an account? </span>
+        <span style="color:var(--green-600);font-weight:700;cursor:pointer" onclick="toggleAuthMode()" id="auth-toggle-link">Sign up</span>
+      </p>
+    </div>
+
+    <!-- DISPOSE PAGE -->
+    <div id="page-dispose" class="page" style="padding:20px 16px;">
+      <div id="dispose-content"></div>
+    </div>
+
+    <!-- REWARDS PAGE -->
+    <div id="page-rewards" class="page" style="padding:20px 16px;">
+      <div class="flex-between" style="margin-bottom:4px">
+        <h2 class="section-title">Rewards 🎁</h2>
+        <span class="pts-pill" id="rewards-pts" style="display:none"></span>
+      </div>
+      <p class="text-muted text-sm" style="margin-bottom:20px">Redeem your eco-points for campus rewards</p>
+      <div id="rewards-signin-prompt"></div>
+      <div class="cat-filter" id="cat-filter"></div>
+      <div class="rewards-grid" id="rewards-grid"></div>
+      <div class="card" style="margin-top:24px">
+        <h3 style="font-size:14px;font-weight:700;color:var(--green-900);margin-bottom:14px">📋 How Points Work</h3>
+        <div class="how-pts-grid">
+          <div class="how-pt-item"><div class="how-pt-key">1 kg disposed</div><div class="how-pt-val">= 10 pts</div></div>
+          <div class="how-pt-item"><div class="how-pt-key">500g disposed</div><div class="how-pt-val">= 5 pts</div></div>
+          <div class="how-pt-item"><div class="how-pt-key">Quiz completion</div><div class="how-pt-val">+5 pts bonus</div></div>
+          <div class="how-pt-item"><div class="how-pt-key">First signup</div><div class="how-pt-val">+10 pts bonus</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEARN PAGE -->
+    <div id="page-learn" class="page" style="padding:20px 16px;">
+      <h2 class="section-title" style="margin-bottom:4px">Learn & Earn 📚</h2>
+      <p class="text-muted text-sm" style="margin-bottom:20px">Master waste segregation. Complete the quiz for bonus points!</p>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchLearnTab('guide',this)">📖 Guide</button>
+        <button class="tab-btn" onclick="switchLearnTab('quiz',this)">🧠 Quiz</button>
+        <button class="tab-btn" onclick="switchLearnTab('impact',this)">🌍 Impact</button>
+      </div>
+      <div id="learn-guide" class="learn-panel"></div>
+      <div id="learn-quiz" class="learn-panel" style="display:none"></div>
+      <div id="learn-impact" class="learn-panel" style="display:none"></div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div id="page-profile" class="page" style="padding:20px 16px;">
+      <div id="profile-content"></div>
+    </div>
+
+    <!-- ADMIN PAGE -->
+    <div id="page-admin" class="page" style="padding:20px 16px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <div style="background:#e24b4a20;border-radius:10px;padding:6px 10px;font-size:20px">⚙️</div>
+        <div>
+          <h2 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--green-900)">Admin Panel</h2>
+          <div style="font-size:11px;color:var(--text-muted)">Manage users, logs & rewards</div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchAdminTab('users',this)">👥 Users</button>
+        <button class="tab-btn" onclick="switchAdminTab('logs',this)">📋 Logs</button>
+        <button class="tab-btn" onclick="switchAdminTab('rewards',this)">🎁 Rewards</button>
+      </div>
+      <div id="admin-users" class="admin-panel"></div>
+      <div id="admin-logs" class="admin-panel" style="display:none"></div>
+      <div id="admin-rewards" class="admin-panel" style="display:none"></div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav" id="bottom-nav"></div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast" style="display:none"></div>
+
+</div>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const POINTS_PER_KG = 10;
+const MAX_WEIGHT_GRAMS = 5000;
+const MAX_DAILY_SUBMISSIONS = 3;
+
+const WASTE_TYPES = [
+  { id:"dry",     label:"Dry Waste",  icon:"📄", color:"#c8a87a", desc:"Paper, cardboard, metal" },
+  { id:"wet",     label:"Wet Waste",  icon:"🥬", color:"#5a9e6f", desc:"Food, organic matter" },
+  { id:"plastic", label:"Plastic",    icon:"♻️", color:"#4a90d9", desc:"Bottles, bags, packaging" },
+];
+
+const INITIAL_REWARDS = [
+  { id:"r1", name:"₹10 Off at Canteen",    points:50,  icon:"🍽️", category:"Food",    stock:20 },
+  { id:"r2", name:"Free Samosa Snack",      points:80,  icon:"🧆", category:"Food",    stock:15 },
+  { id:"r3", name:"₹25 Canteen Voucher",    points:150, icon:"🎟️", category:"Voucher", stock:10 },
+  { id:"r4", name:"Stationery Pack",        points:200, icon:"✏️", category:"Gift",    stock:5  },
+  { id:"r5", name:"Free Coffee/Tea",        points:60,  icon:"☕", category:"Food",    stock:30 },
+  { id:"r6", name:"₹50 Book Store Credit",  points:300, icon:"📚", category:"Voucher", stock:8  },
+];
+
+const INITIAL_USERS = [
+  { id:"u1", name:"Priya Sharma", email:"priya@college.edu", points:340, avatar:"PS", joined:"2025-01-15" },
+  { id:"u2", name:"Arjun Mehta",  email:"arjun@college.edu", points:275, avatar:"AM", joined:"2025-01-20" },
+  { id:"u3", name:"Sneha Nair",   email:"sneha@college.edu", points:210, avatar:"SN", joined:"2025-02-01" },
+  { id:"u4", name:"Rahul Das",    email:"rahul@college.edu", points:190, avatar:"RD", joined:"2025-02-10" },
+  { id:"u5", name:"Kavya Reddy",  email:"kavya@college.edu", points:155, avatar:"KR", joined:"2025-02-15" },
+];
+
+const INITIAL_LOGS = [
+  { id:"l1", userId:"u1", wasteType:"dry",     weightGrams:800,  points:8,  timestamp: new Date(Date.now()-86400000*2).toISOString() },
+  { id:"l2", userId:"u2", wasteType:"plastic",  weightGrams:1200, points:12, timestamp: new Date(Date.now()-86400000).toISOString()   },
+  { id:"l3", userId:"u1", wasteType:"wet",      weightGrams:2000, points:20, timestamp: new Date(Date.now()-86400000).toISOString()   },
+  { id:"l4", userId:"u3", wasteType:"dry",      weightGrams:500,  points:5,  timestamp: new Date(Date.now()-3600000*5).toISOString()  },
+];
+
+const QUIZ_QUESTIONS = [
+  { q:"Where does a banana peel go?",                     options:["Dry Waste","Wet Waste","Plastic","Hazardous"], answer:1 },
+  { q:"An empty plastic water bottle belongs in?",         options:["Wet Waste","Hazardous","Plastic","Dry Waste"], answer:2 },
+  { q:"Old newspapers should go in?",                     options:["Wet Waste","Dry Waste","Plastic","Hazardous"], answer:1 },
+  { q:"Used cooking oil should be disposed as?",           options:["Wet Waste","Dry Waste","Plastic","Hazardous"], answer:3 },
+  { q:"A dead battery belongs in?",                       options:["Dry Waste","Wet Waste","Plastic","Hazardous"], answer:3 },
+];
+
+const AWARENESS_TIPS = [
+  "Rinse plastic containers before recycling",
+  "Don't mix food scraps with dry recyclables",
+  "Crush plastic bottles to save bin space",
+  "Remove labels from glass before recycling",
+  "Compost wet waste when possible",
+];
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+function gs(k, fb) { try { const v=localStorage.getItem(k); return v?JSON.parse(v):fb; } catch { return fb; } }
+function ss(k, v) { try { localStorage.setItem(k,JSON.stringify(v)); } catch {} }
+
+let state = {
+  users:       gs("swrs_users",    INITIAL_USERS),
+  logs:        gs("swrs_logs",     INITIAL_LOGS),
+  rewards:     gs("swrs_rewards",  INITIAL_REWARDS),
+  currentUser: gs("swrs_current",  null),
+  adminMode:   false,
+  authMode:    "login",
+  currentPage: "home",
+  // dispose
+  disposeWasteType: "dry",
+  disposeWeight: "",
+  disposeSubmitted: false,
+  disposeLastPoints: 0,
+  // rewards
+  rewardFilter: "All",
+  // learn
+  learnTab: "guide",
+  quizIdx: 0,
+  quizSelected: null,
+  quizScore: 0,
+  quizDone: false,
+  quizRewarded: gs("swrs_quiz_done", false),
+  // admin
+  adminTab: "users",
+  adminEditPoints: {},
+  newReward: { name:"", points:"", icon:"🎁", category:"Food", stock:10 },
+};
+
+function saveState() {
+  ss("swrs_users",   state.users);
+  ss("swrs_logs",    state.logs);
+  ss("swrs_rewards", state.rewards);
+  ss("swrs_current", state.currentUser);
+}
+
+function genId() { return Math.random().toString(36).slice(2, 10); }
+function todayStr() { return new Date().toISOString().slice(0,10); }
+function calcPoints(g) { return Math.max(1, Math.floor((g/1000)*POINTS_PER_KG)); }
+
+// ─── TOAST ──────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type="success") {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "toast " + type;
+  el.style.display = "block";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.style.display="none"; }, 3500);
+}
+
+// ─── NAVIGATE ───────────────────────────────────────────────────────────────
+function navigate(page) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  const el = document.getElementById("page-"+page);
+  if (el) { el.classList.add("active"); }
+  state.currentPage = page;
+  renderHeader();
+  renderBottomNav();
+  if (page === "home")    renderHome();
+  if (page === "dispose") renderDispose();
+  if (page === "rewards") renderRewards();
+  if (page === "profile") renderProfile();
+  if (page === "admin")   renderAdmin();
+  if (page === "auth")    renderAuth();
+  if (page === "learn")   renderLearn();
+}
+
+// ─── HEADER ──────────────────────────────────────────────────────────────────
+function renderHeader() {
+  const el = document.getElementById("header-right");
+  if (state.currentUser) {
+    el.innerHTML = `
+      <span class="pts-pill">🌟 ${state.currentUser.points} pts</span>
+      <div class="avatar" onclick="navigate('profile')" title="${state.currentUser.name}">${state.currentUser.avatar}</div>
+    `;
+  } else {
+    el.innerHTML = `<button class="btn btn-primary" style="padding:8px 18px;font-size:13px" onclick="navigate('auth')">Sign In</button>`;
+  }
+}
+
+// ─── BOTTOM NAV ─────────────────────────────────────────────────────────────
+function renderBottomNav() {
+  const nav = document.getElementById("bottom-nav");
+  const items = [
+    { id:"home",    icon:"🏠", label:"Home" },
+    { id:"dispose", icon:"♻️", label:"Dispose" },
+    { id:"rewards", icon:"🎁", label:"Rewards" },
+    { id:"learn",   icon:"📚", label:"Learn" },
+    ...(state.currentUser ? [{ id:"profile", icon:"👤", label:"Profile" }] : []),
+    ...(state.adminMode   ? [{ id:"admin",   icon:"⚙️", label:"Admin"   }] : []),
+  ];
+  let html = items.map(item => `
+    <button class="nav-btn ${state.currentPage===item.id?'active':''}" onclick="navigate('${item.id}')">
+      <span class="nav-icon">${item.icon}</span>
+      <span>${item.label}</span>
+    </button>
+  `).join("");
+  if (!state.currentUser) {
+    html += `<button class="nav-btn" onclick="navigate('auth')"><span class="nav-icon">🔑</span><span>Login</span></button>`;
+  } else {
+    html += `<button class="nav-btn" onclick="logout()"><span class="nav-icon">🚪</span><span>Logout</span></button>`;
+  }
+  nav.innerHTML = html;
+}
+
+// ─── AUTH ────────────────────────────────────────────────────────────────────
+function renderAuth() {
+  const m = state.authMode;
+  document.getElementById("auth-title").textContent = m==="login" ? "Welcome Back!" : "Join EcoRewards";
+  document.getElementById("auth-sub").textContent   = m==="login" ? "Sign in to continue earning green points" : "Start earning rewards for eco-friendly actions";
+  document.getElementById("auth-name-field").style.display = m==="login" ? "none" : "block";
+  document.getElementById("auth-submit-btn").textContent   = m==="login" ? "🔑 Sign In" : "🌱 Create Account";
+  document.getElementById("auth-toggle-text").textContent  = m==="login" ? "Don't have an account? " : "Already have an account? ";
+  document.getElementById("auth-toggle-link").textContent  = m==="login" ? "Sign up" : "Sign in";
+  document.getElementById("auth-email").value = "";
+  document.getElementById("auth-password").value = "";
+  document.getElementById("auth-name").value = "";
+}
+
+function toggleAuthMode() {
+  state.authMode = state.authMode==="login" ? "signup" : "login";
+  renderAuth();
+}
+
+function authSubmit() {
+  const email = document.getElementById("auth-email").value.trim();
+  const password = document.getElementById("auth-password").value;
+  if (!email) { showToast("Please enter your email.", "error"); return; }
+  if (state.authMode === "login") {
+    doLogin(email, password);
+  } else {
+    const name = document.getElementById("auth-name").value.trim();
+    if (!name) { showToast("Please enter your name.", "error"); return; }
+    doSignup(name, email);
+  }
+}
+
+function demoLogin() { doLogin("priya@college.edu", "password"); }
+
+function doLogin(email) {
+  const user = state.users.find(u => u.email === email);
+  if (!user) { showToast("No account found. Please sign up.", "error"); return; }
+  state.currentUser = user;
+  saveState();
+  showToast(`Welcome back, ${user.name.split(" ")[0]}! 🌱`);
+  navigate("dispose");
+}
+
+function doSignup(name, email) {
+  if (state.users.find(u => u.email === email)) { showToast("Email already registered.", "error"); return; }
+  const newUser = {
+    id: genId(), name, email, points: 10,
+    avatar: name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase(),
+    joined: new Date().toISOString().slice(0,10)
+  };
+  state.users.push(newUser);
+  state.currentUser = newUser;
+  saveState();
+  showToast(`Welcome to EcoRewards, ${name.split(" ")[0]}! You got 10 bonus points 🎉`);
+  navigate("dispose");
+}
+
+function logout() {
+  state.currentUser = null;
+  state.adminMode = false;
+  saveState();
+  navigate("home");
+}
+
+// ─── HOME ────────────────────────────────────────────────────────────────────
+let tipIdx = 0, tipTimer;
+function renderHome() {
+  // hero buttons
+  const heroEl = document.getElementById("hero-btns");
+  if (state.currentUser) {
+    heroEl.innerHTML = `
+      <button class="btn btn-white btn-pulse" style="font-size:14px" onclick="navigate('dispose')">♻️ Log Disposal</button>
+      <button class="btn btn-outline" style="border-color:rgba(255,255,255,0.5);color:white;font-size:14px" onclick="navigate('learn')">Learn More</button>
+    `;
+  } else {
+    heroEl.innerHTML = `
+      <button class="btn btn-white btn-pulse" style="font-size:14px" onclick="goSignup()">📱 Scan & Start</button>
+      <button class="btn btn-outline" style="border-color:rgba(255,255,255,0.5);color:white;font-size:14px" onclick="navigate('learn')">Learn More</button>
+    `;
+  }
+  // stats
+  const totalWaste = state.logs.reduce((s,l) => s+l.weightGrams, 0);
+  const activeUsers = [...new Set(state.logs.map(l=>l.userId))].length;
+  const totalPts = state.logs.reduce((s,l) => s+l.points, 0);
+  document.getElementById("home-stats").innerHTML = [
+    { label:"Waste Collected", value:`${(totalWaste/1000).toFixed(1)}kg`, icon:"🗑️" },
+    { label:"Active Users",    value: activeUsers,                        icon:"👥" },
+    { label:"Points Given",    value: totalPts,                           icon:"⭐" },
+  ].map(s=>`
+    <div class="stat-card">
+      <div class="stat-icon">${s.icon}</div>
+      <div class="stat-val">${s.value}</div>
+      <div class="stat-lbl">${s.label}</div>
+    </div>
+  `).join("");
+  // tip ticker
+  clearInterval(tipTimer);
+  document.getElementById("tip-text").textContent = AWARENESS_TIPS[tipIdx % AWARENESS_TIPS.length];
+  tipTimer = setInterval(() => {
+    tipIdx = (tipIdx+1) % AWARENESS_TIPS.length;
+    const el = document.getElementById("tip-text");
+    if (el) el.textContent = AWARENESS_TIPS[tipIdx];
+  }, 4000);
+  // leaderboard
+  const colors = ["#2d7a3a","#4a90d9","#c8a87a","#9b59b6","#e67e22"];
+  const medals = ["🥇","🥈","🥉","4️⃣","5️⃣"];
+  const sorted = [...state.users].sort((a,b) => b.points - a.points).slice(0,5);
+  document.getElementById("leaderboard").innerHTML = sorted.map((u,i) => {
+    const kgDisposed = state.logs.filter(l=>l.userId===u.id).reduce((s,l)=>s+l.weightGrams,0)/1000;
+    return `
+      <div class="lb-row">
+        <span class="lb-medal">${medals[i]}</span>
+        <div class="avatar" style="background:${colors[i]};font-size:11px">${u.avatar}</div>
+        <div style="flex:1">
+          <div class="lb-name">${u.name}</div>
+          <div class="lb-sub">${kgDisposed.toFixed(1)} kg disposed</div>
+        </div>
+        <div style="text-align:right">
+          <div class="lb-pts">${u.points}</div>
+          <div style="font-size:10px;color:var(--text-muted)">pts</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+  // admin btn
+  const btn = document.getElementById("admin-toggle-btn");
+  if (btn) btn.textContent = state.adminMode ? "🔒 Exit Admin" : "⚙️ Admin Access";
+}
+
+function goSignup() { state.authMode = "signup"; navigate("auth"); }
+function toggleAdmin() {
+  state.adminMode = !state.adminMode;
+  renderBottomNav();
+  renderHome();
+  if (state.adminMode) navigate("admin");
+}
+
+// ─── DISPOSE ─────────────────────────────────────────────────────────────────
+function renderDispose() {
+  const el = document.getElementById("dispose-content");
+  if (!state.currentUser) {
+    el.innerHTML = `
+      <div class="no-auth-dispose">
+        <div style="font-size:60px;margin-bottom:20px">📱</div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--green-900);margin-bottom:12px">Scan & Earn Points</h2>
+        <p style="color:var(--text-muted);font-size:14px;margin-bottom:28px;line-height:1.6">Sign in to log your waste disposal and start earning green reward points.</p>
+        <button class="btn btn-primary full-btn" style="margin-bottom:12px" onclick="navigate('auth')">Sign In to Continue</button>
+        <button class="btn btn-outline full-btn" onclick="goSignup()">Create Free Account</button>
+      </div>
+    `;
+    return;
+  }
+
+  if (state.disposeSubmitted) {
+    el.innerHTML = `
+      <div class="success-screen">
+        <div class="success-icon">✅</div>
+        <h2 style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--green-900);margin-bottom:8px">Great Job!</h2>
+        <div class="success-pts">+${state.disposeLastPoints} pts</div>
+        <p style="color:var(--text-muted);font-size:14px;margin-bottom:28px">You've earned ${state.disposeLastPoints} points for responsible waste disposal 🌿</p>
+        <button class="btn btn-primary full-btn" style="margin-bottom:12px" onclick="resetDispose()">Log Another</button>
+        <button class="btn btn-outline full-btn" onclick="navigate('rewards')">View Rewards</button>
+      </div>
+    `;
+    return;
+  }
+
+  const today = todayStr();
+  const todayLogs = state.logs.filter(l => l.userId===state.currentUser.id && l.timestamp.startsWith(today));
+  const remaining = MAX_DAILY_SUBMISSIONS - todayLogs.length;
+  const estPoints = state.disposeWeight ? calcPoints(parseInt(state.disposeWeight)||0) : 0;
+  const progressPct = (todayLogs.length / MAX_DAILY_SUBMISSIONS) * 100;
+  const tip = AWARENESS_TIPS[Math.floor(Math.random()*AWARENESS_TIPS.length)];
+
+  el.innerHTML = `
+    <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--green-900);margin-bottom:4px">Log Disposal ♻️</h2>
+    <p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">You have ${remaining} submission${remaining!==1?"s":""} remaining today</p>
+
+    <div class="card daily-limit-bar">
+      <div class="flex-between mb-8">
+        <span style="font-size:12px;color:var(--text-muted);font-weight:600">Daily Limit</span>
+        <span style="font-size:12px;font-weight:700;color:${remaining>0?'var(--green-600)':'var(--red)'}">${todayLogs.length}/${MAX_DAILY_SUBMISSIONS}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${progressPct}%;${remaining===0?'background:var(--red)':''}"></div></div>
+    </div>
+
+    <div style="margin-bottom:20px">
+      <label class="field-label" style="margin-bottom:10px">Select Waste Type</label>
+      <div class="waste-chips" id="waste-chips">
+        ${WASTE_TYPES.map(wt=>`
+          <div class="waste-chip ${state.disposeWasteType===wt.id?'selected':''}" onclick="selectWasteType('${wt.id}')">
+            <div class="waste-chip-icon">${wt.icon}</div>
+            <div class="waste-chip-name">${wt.label}</div>
+            <div class="waste-chip-desc">${wt.desc}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <label class="field-label" style="margin-bottom:10px">Weight (grams)</label>
+      <input type="number" id="weight-input" placeholder="e.g. 500" value="${state.disposeWeight}" min="1" max="${MAX_WEIGHT_GRAMS}" oninput="onWeightInput(this.value)">
+      <div class="flex-between" style="margin-top:10px">
+        <span class="max-hint">Max: ${MAX_WEIGHT_GRAMS}g per entry</span>
+        ${estPoints>0?`<span class="est-pts">~${estPoints} pts to earn</span>`:""}
+      </div>
+      <div class="weight-quick">
+        ${[100,250,500,1000].map(g=>`<button class="wq-btn ${state.disposeWeight==g?'active':''}" onclick="setWeight(${g})">${g}g</button>`).join("")}
+      </div>
+    </div>
+
+    <div class="tip-box"><span>💡</span><span>${tip}</span></div>
+
+    <button class="btn btn-primary full-btn" onclick="submitDisposal()" ${remaining===0||!state.disposeWeight?'disabled style="opacity:0.5"':''}>
+      ${remaining===0 ? "Daily Limit Reached" : "Submit Disposal"}
+    </button>
+
+    ${todayLogs.length>0 ? `
+      <div style="margin-top:24px">
+        <h3 style="font-size:14px;font-weight:700;color:var(--green-900);margin-bottom:12px">Today's Submissions</h3>
+        ${todayLogs.map(l => {
+          const wt = WASTE_TYPES.find(w=>w.id===l.wasteType);
+          return `<div class="today-log">
+            <span style="font-size:22px">${wt?.icon}</span>
+            <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--green-900)">${wt?.label}</div><div style="font-size:11px;color:var(--text-muted)">${l.weightGrams}g</div></div>
+            <span style="font-size:13px;font-weight:700;color:var(--green-600)">+${l.points} pts</span>
+          </div>`;
+        }).join("")}
+      </div>
+    ` : ""}
+  `;
+}
+
+function selectWasteType(id) { state.disposeWasteType = id; renderDispose(); }
+function onWeightInput(v) { state.disposeWeight = v; renderDispose(); }
+function setWeight(g) { state.disposeWeight = g; renderDispose(); }
+function resetDispose() { state.disposeSubmitted = false; state.disposeWeight = ""; renderDispose(); }
+
+function submitDisposal() {
+  const w = parseInt(state.disposeWeight);
+  if (!w || w<=0) return;
+  if (!state.currentUser) return;
+  const today = todayStr();
+  const todayLogs = state.logs.filter(l => l.userId===state.currentUser.id && l.timestamp.startsWith(today));
+  if (todayLogs.length >= MAX_DAILY_SUBMISSIONS) { showToast(`Daily limit of ${MAX_DAILY_SUBMISSIONS} submissions reached. Come back tomorrow!`, "error"); return; }
+  if (w > MAX_WEIGHT_GRAMS) { showToast(`Maximum weight per entry is ${MAX_WEIGHT_GRAMS}g.`, "error"); return; }
+  const points = calcPoints(w);
+  const log = { id:genId(), userId:state.currentUser.id, wasteType:state.disposeWasteType, weightGrams:w, points, timestamp:new Date().toISOString() };
+  state.logs.unshift(log);
+  state.users = state.users.map(u => u.id===state.currentUser.id ? { ...u, points: u.points+points } : u);
+  state.currentUser = { ...state.currentUser, points: state.currentUser.points+points };
+  saveState();
+  state.disposeLastPoints = points;
+  state.disposeSubmitted = true;
+  showToast(`+${points} points earned! Great job recycling! 🌿`);
+  renderDispose();
+  renderHeader();
+}
+
+// ─── REWARDS ─────────────────────────────────────────────────────────────────
+function renderRewards() {
+  const ptEl = document.getElementById("rewards-pts");
+  if (state.currentUser) { ptEl.textContent = `🌟 ${state.currentUser.points} pts`; ptEl.style.display="inline"; }
+  else ptEl.style.display="none";
+
+  const spEl = document.getElementById("rewards-signin-prompt");
+  spEl.innerHTML = !state.currentUser ? `
+    <div class="sign-in-prompt"><p>Sign in to redeem rewards!</p><button class="btn btn-primary" style="font-size:13px" onclick="navigate('auth')">Sign In</button></div>
+  ` : "";
+
+  const categories = ["All", ...new Set(state.rewards.map(r=>r.category))];
+  document.getElementById("cat-filter").innerHTML = categories.map(c=>`
+    <button class="cat-btn ${state.rewardFilter===c?'active':''}" onclick="setRewardFilter('${c}')">${c}</button>
+  `).join("");
+
+  const filtered = state.rewards.filter(r => state.rewardFilter==="All" || r.category===state.rewardFilter);
+  document.getElementById("rewards-grid").innerHTML = filtered.map(reward => {
+    const canAfford = state.currentUser && state.currentUser.points >= reward.points;
+    const oos = reward.stock <= 0;
+    return `
+      <div class="reward-card ${oos?'disabled':''}">
+        ${reward.stock<=3&&reward.stock>0?`<div class="low-stock-badge">Low Stock</div>`:""}
+        <div class="reward-icon">${reward.icon}</div>
+        <div class="reward-name">${reward.name}</div>
+        <div class="reward-stock">${reward.stock} available</div>
+        <div class="reward-footer">
+          <span class="reward-pts">⭐ ${reward.points}</span>
+          <button onclick="redeemReward('${reward.id}')" ${!canAfford||oos?'disabled':''} style="background:${canAfford&&!oos?'var(--green-600)':'#e0e8e0'};color:${canAfford&&!oos?'white':'#aaa'};border:none;border-radius:8px;padding:7px 12px;font-size:11px;font-weight:700;cursor:${canAfford&&!oos?'pointer':'not-allowed'};font-family:inherit">
+            ${oos?"Sold Out":"Redeem"}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function setRewardFilter(cat) { state.rewardFilter = cat; renderRewards(); }
+
+function redeemReward(id) {
+  if (!state.currentUser) return;
+  const reward = state.rewards.find(r=>r.id===id);
+  if (!reward) return;
+  if (state.currentUser.points < reward.points) { showToast("Not enough points!", "error"); return; }
+  state.users = state.users.map(u => u.id===state.currentUser.id ? { ...u, points: u.points-reward.points } : u);
+  state.currentUser = { ...state.currentUser, points: state.currentUser.points-reward.points };
+  state.rewards = state.rewards.map(r => r.id===id ? { ...r, stock: Math.max(0,r.stock-1) } : r);
+  saveState();
+  showToast(`🎉 "${reward.name}" redeemed! Show this at the canteen.`);
+  renderRewards();
+  renderHeader();
+}
+
+// ─── LEARN ────────────────────────────────────────────────────────────────────
+function renderLearn() {
+  renderGuide();
+  renderQuiz();
+  renderImpact();
+}
+
+function switchLearnTab(tab, btn) {
+  state.learnTab = tab;
+  document.querySelectorAll(".learn-panel").forEach(p=>p.style.display="none");
+  document.getElementById("learn-"+tab).style.display="block";
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+function renderGuide() {
+  const guides = [
+    { icon:"📄", bg:"#fff8e8", border:"#c8a87a30", accent:"#c8a87a", title:"Dry Waste",      items:["Paper & cardboard","Metal cans & foil","Glass bottles","Fabric & leather","Electronic waste"], tip:"Keep dry waste clean and separate from food residue." },
+    { icon:"🥬", bg:"#eaf4eb", border:"#2d7a3a30", accent:"#2d7a3a", title:"Wet Waste",      items:["Food scraps & peels","Cooked leftovers","Tea bags & grounds","Garden waste","Egg shells"],     tip:"Wet waste can be composted to enrich soil naturally." },
+    { icon:"♻️", bg:"#e8f4fb", border:"#4a90d930", accent:"#4a90d9", title:"Plastic Waste",  items:["Water & beverage bottles","Plastic bags","Packaging materials","Straws & cups","Containers"],  tip:"Rinse and crush plastic before disposal to save space." },
+    { icon:"⚠️", bg:"#fff0f0", border:"#e24b4a30", accent:"#e24b4a", title:"Hazardous Waste",items:["Batteries & electronics","Chemicals & solvents","Medicines & syringes","Paint & aerosols","Fluorescent bulbs"], tip:"Never mix hazardous waste with regular bins. Use designated collection points." },
+  ];
+  document.getElementById("learn-guide").innerHTML = guides.map(g=>`
+    <div class="guide-card" style="background:${g.bg};border-color:${g.border}">
+      <div class="guide-card-head">
+        <div class="guide-card-img">${g.icon}</div>
+        <div>
+          <div style="font-size:16px;font-weight:800;color:var(--green-900)">${g.title}</div>
+          <div style="font-size:11px;color:${g.accent};font-weight:700">EXAMPLES</div>
+        </div>
+      </div>
+      <div class="guide-items">${g.items.map(i=>`<div class="guide-item">• ${i}</div>`).join("")}</div>
+      <div class="guide-tip"><span>💡</span><span>${g.tip}</span></div>
+    </div>
+  `).join("") + `
+    <div class="card">
+      <h3 style="font-size:14px;font-weight:700;color:var(--green-900);margin-bottom:14px">🌟 Quick Tips</h3>
+      <div class="quick-tips-list">
+        ${AWARENESS_TIPS.map((t,i)=>`
+          <div class="quick-tip-item">
+            <div class="tip-num">${i+1}</div>
+            <span class="tip-num-text">${t}</span>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderQuiz() {
+  const el = document.getElementById("learn-quiz");
+  if (!state.quizDone) {
+    const q = QUIZ_QUESTIONS[state.quizIdx];
+    const pct = (state.quizIdx / QUIZ_QUESTIONS.length) * 100;
+    el.innerHTML = `
+      <div class="flex-between" style="margin-bottom:16px">
+        <span class="text-muted text-sm">Question ${state.quizIdx+1} of ${QUIZ_QUESTIONS.length}</span>
+        <span style="font-size:13px;font-weight:700;color:var(--green-600)">Score: ${state.quizScore}</span>
+      </div>
+      <div class="progress-bar" style="margin-bottom:24px"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="card" style="background:var(--green-100);border:1.5px solid var(--green-200);margin-bottom:20px">
+        <div style="font-size:16px;font-weight:700;color:var(--green-900);line-height:1.4">🤔 ${q.q}</div>
+      </div>
+      ${q.options.map((opt,i)=>`
+        <button class="quiz-opt ${state.quizSelected===null?'':i===q.answer?'correct':state.quizSelected===i?'wrong':''}" onclick="answerQuiz(${i})" ${state.quizSelected!==null?'disabled':''}>
+          <span style="margin-right:10px;font-weight:700">${["A","B","C","D"][i]}.</span>${opt}
+        </button>
+      `).join("")}
+    `;
+  } else {
+    const emoji = state.quizScore>=4?"🏆":state.quizScore>=3?"🎉":"📚";
+    const msg = state.quizScore>=4?"Excellent! You're a waste management pro!":state.quizScore>=3?"Good job! Keep learning!":"Keep practicing to become an eco expert!";
+    el.innerHTML = `
+      <div class="quiz-complete">
+        <div style="font-size:60px;margin-bottom:16px">${emoji}</div>
+        <h3 style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--green-900);margin-bottom:8px">Quiz Complete!</h3>
+        <div class="quiz-score">${state.quizScore}/${QUIZ_QUESTIONS.length}</div>
+        <p style="color:var(--text-muted);font-size:14px;margin-bottom:24px">${msg}</p>
+        ${state.quizScore>=3&&!state.quizRewarded?`<div style="background:var(--green-100);border-radius:14px;padding:14px;margin-bottom:20px"><span style="font-size:14px;color:var(--green-900);font-weight:600">🌟 Claim your 5 bonus points!</span></div>`:""}
+        <button class="btn btn-primary full-btn" style="margin-bottom:10px" onclick="retryQuiz()">
+          ${state.quizScore>=3&&!state.quizRewarded&&state.currentUser?"Claim Bonus & Retry":"Try Again"}
+        </button>
+        ${state.quizScore>=3&&!state.quizRewarded&&state.currentUser?`<button class="btn btn-outline full-btn" onclick="claimQuizBonus()">Claim Bonus Points</button>`:""}
+      </div>
+    `;
+  }
+}
+
+function answerQuiz(idx) {
+  if (state.quizSelected !== null) return;
+  state.quizSelected = idx;
+  if (idx === QUIZ_QUESTIONS[state.quizIdx].answer) state.quizScore++;
+  renderQuiz();
+  setTimeout(() => {
+    if (state.quizIdx + 1 >= QUIZ_QUESTIONS.length) {
+      state.quizDone = true;
+    } else {
+      state.quizIdx++;
+      state.quizSelected = null;
+    }
+    renderQuiz();
+  }, 1200);
+}
+
+function retryQuiz() {
+  if (state.quizScore>=3 && !state.quizRewarded && state.currentUser) claimQuizBonus();
+  state.quizIdx = 0; state.quizSelected = null; state.quizScore = 0; state.quizDone = false;
+  renderQuiz();
+}
+
+function claimQuizBonus() {
+  if (state.quizRewarded || !state.currentUser || state.quizScore < 3) return;
+  state.users = state.users.map(u => u.id===state.currentUser.id ? { ...u, points: u.points+5 } : u);
+  state.currentUser = { ...state.currentUser, points: state.currentUser.points+5 };
+  state.quizRewarded = true;
+  ss("swrs_quiz_done", true);
+  saveState();
+  showToast("🎉 +5 bonus points for acing the quiz!");
+  renderHeader();
+  renderQuiz();
+}
+
+function renderImpact() {
+  const facts = [
+    { icon:"🌊", title:"Ocean Pollution",   stat:"8M tons",           desc:"of plastic enter oceans every year. Proper disposal can prevent this." },
+    { icon:"🌡️", title:"Methane Emissions", stat:"5% of GHGs",         desc:"come from landfills. Composting wet waste reduces emissions significantly." },
+    { icon:"💧", title:"Groundwater",        stat:"50% at risk",        desc:"of groundwater sources are threatened by improper hazardous waste disposal." },
+    { icon:"♻️", title:"Recycling Benefit",  stat:"95% energy saved",   desc:"when recycling aluminum vs. producing from raw materials." },
+  ];
+  document.getElementById("learn-impact").innerHTML = facts.map(f=>`
+    <div class="impact-card">
+      <div class="impact-icon-wrap">${f.icon}</div>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--green-900);margin-bottom:2px">${f.title}</div>
+        <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--green-600);margin-bottom:4px">${f.stat}</div>
+        <div style="font-size:12px;color:var(--text-muted);line-height:1.5">${f.desc}</div>
+      </div>
+    </div>
+  `).join("") + `
+    <div class="impact-cta">
+      <h3>Your Potential Impact</h3>
+      <p>If every student on campus recycled just 500g per week, we could collectively divert over 2 tonnes of waste from landfills every month. Start your contribution today!</p>
+    </div>
+  `;
+}
+
+// ─── PROFILE ─────────────────────────────────────────────────────────────────
+function renderProfile() {
+  if (!state.currentUser) return;
+  const el = document.getElementById("profile-content");
+  const userLogs = state.logs.filter(l => l.userId===state.currentUser.id);
+  const totalWaste = userLogs.reduce((s,l)=>s+l.weightGrams,0);
+  const rank = [...state.users].sort((a,b)=>b.points-a.points).findIndex(u=>u.id===state.currentUser.id)+1;
+  const pts = state.currentUser.points;
+  const level = pts<100 ? { name:"Eco Newcomer",    icon:"🌱", next:100  }
+              : pts<300 ? { name:"Green Warrior",    icon:"🌿", next:300  }
+              : pts<600 ? { name:"Eco Champion",     icon:"🌳", next:600  }
+              :            { name:"Planet Guardian",  icon:"🌍", next:1000 };
+
+  el.innerHTML = `
+    <div class="profile-hero">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px">
+        <div class="profile-avatar">${state.currentUser.avatar}</div>
+        <div>
+          <div style="font-size:18px;font-weight:700;color:white">${state.currentUser.name}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.7)">${state.currentUser.email}</div>
+          <div style="font-size:12px;color:#a8e6b0;margin-top:4px">🏅 Rank #${rank} on campus</div>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="profile-stat"><div class="profile-stat-val">${pts}</div><div class="profile-stat-lbl">⭐ Points</div></div>
+        <div class="profile-stat"><div class="profile-stat-val">${(totalWaste/1000).toFixed(1)}</div><div class="profile-stat-lbl">♻️ kg Recycled</div></div>
+        <div class="profile-stat"><div class="profile-stat-val">${userLogs.length}</div><div class="profile-stat-lbl">📊 Logs</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div class="flex-between" style="margin-bottom:10px">
+        <div>
+          <span style="font-size:22px">${level.icon}</span>
+          <span style="font-size:15px;font-weight:800;color:var(--green-900);margin-left:8px;font-family:'Syne',sans-serif">${level.name}</span>
+        </div>
+        <span class="text-muted text-sm">${pts}/${level.next} pts</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${Math.min(100,(pts/level.next)*100)}%"></div></div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:6px">${level.next-pts} pts to next level</div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <h3 style="font-size:14px;font-weight:700;color:var(--green-900);margin-bottom:14px">Recent Activity</h3>
+      ${userLogs.length===0 ? `<p class="text-muted text-sm">No disposal logs yet. Start recycling to earn points!</p>` :
+        userLogs.slice(0,5).map(l => {
+          const wt = WASTE_TYPES.find(w=>w.id===l.wasteType);
+          return `<div class="log-item">
+            <span style="font-size:22px">${wt?.icon}</span>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600;color:var(--green-900)">${wt?.label} — ${l.weightGrams}g</div>
+              <div style="font-size:11px;color:var(--text-muted)">${new Date(l.timestamp).toLocaleDateString()}</div>
+            </div>
+            <span style="font-size:13px;font-weight:700;color:var(--green-600)">+${l.points}</span>
+          </div>`;
+        }).join("")
+      }
+    </div>
+
+    <button class="btn btn-primary full-btn" style="margin-bottom:12px" onclick="navigate('rewards')">🎁 View Rewards</button>
+    <button class="btn btn-outline full-btn" onclick="logout()">Sign Out</button>
+  `;
+}
+
+// ─── ADMIN ────────────────────────────────────────────────────────────────────
+function renderAdmin() {
+  renderAdminUsers();
+  renderAdminLogs();
+  renderAdminRewards();
+}
+
+function switchAdminTab(tab, btn) {
+  state.adminTab = tab;
+  document.querySelectorAll(".admin-panel").forEach(p=>p.style.display="none");
+  document.getElementById("admin-"+tab).style.display="block";
+  document.querySelectorAll("#page-admin .tab-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+function renderAdminUsers() {
+  const el = document.getElementById("admin-users");
+  el.innerHTML = [...state.users].sort((a,b)=>b.points-a.points).map(u => `
+    <div class="admin-user-card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div class="avatar" style="background:var(--green-600);font-size:11px">${u.avatar}</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;color:var(--green-900)">${u.name}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${u.email}</div>
+        </div>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--green-600)">⭐ ${u.points}</div>
+      </div>
+      <div class="admin-grid-3">
+        <input type="number" placeholder="Manual pts" id="ep-${u.id}" style="padding:8px 10px;font-size:12px">
+        <button class="btn btn-primary btn-sm" onclick="adminAdjustPts('${u.id}',1)">Add</button>
+        <button class="btn btn-danger btn-sm" onclick="adminAdjustPts('${u.id}',-1)">Deduct</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function adminAdjustPts(userId, direction) {
+  const input = document.getElementById("ep-"+userId);
+  const val = parseInt(input?.value);
+  if (!val) return;
+  const delta = direction * val;
+  state.users = state.users.map(u => u.id===userId ? { ...u, points: Math.max(0,u.points+delta) } : u);
+  if (state.currentUser?.id === userId) state.currentUser = { ...state.currentUser, points: Math.max(0,state.currentUser.points+delta) };
+  saveState();
+  showToast(`Points adjusted by ${delta>0?"+":""}${delta}`);
+  renderAdminUsers();
+  renderHeader();
+}
+
+function renderAdminLogs() {
+  const el = document.getElementById("admin-logs");
+  const total = state.logs.reduce((s,l)=>s+l.weightGrams,0);
+  const totalPts = state.logs.reduce((s,l)=>s+l.points,0);
+  el.innerHTML = `
+    <div class="admin-stats">
+      <div class="admin-stat-pill"><div class="admin-stat-val">${state.logs.length}</div><div class="admin-stat-lbl">Total Logs</div></div>
+      <div class="admin-stat-pill"><div class="admin-stat-val">${(total/1000).toFixed(1)}kg</div><div class="admin-stat-lbl">Total Waste</div></div>
+      <div class="admin-stat-pill"><div class="admin-stat-val">${totalPts}</div><div class="admin-stat-lbl">Pts Awarded</div></div>
+    </div>
+    ${state.logs.slice(0,15).map(l => {
+      const user = state.users.find(u=>u.id===l.userId);
+      const wt = WASTE_TYPES.find(w=>w.id===l.wasteType);
+      return `<div class="admin-log-item">
+        <span style="font-size:18px">${wt?.icon}</span>
+        <div style="flex:1">
+          <span style="font-weight:600;color:var(--green-900)">${user?.name?.split(" ")[0]||"?"}</span>
+          <span style="color:var(--text-muted)"> · ${wt?.label} · ${l.weightGrams}g</span>
+        </div>
+        <span style="font-weight:700;color:var(--green-600);font-size:12px">+${l.points}</span>
+      </div>`;
+    }).join("")}
+  `;
+}
+
+function renderAdminRewards() {
+  const el = document.getElementById("admin-rewards");
+  el.innerHTML = `
+    <div class="card" style="margin-bottom:20px">
+      <h3 style="font-size:14px;font-weight:700;color:var(--green-900);margin-bottom:14px">Add New Reward</h3>
+      <input type="text" id="nr-name" placeholder="Reward name" style="margin-bottom:10px">
+      <div class="grid-2" style="margin-bottom:10px">
+        <input type="number" id="nr-points" placeholder="Points required">
+        <input type="number" id="nr-stock" placeholder="Stock" value="10">
+      </div>
+      <div class="grid-2" style="margin-bottom:14px">
+        <input type="text" id="nr-icon" placeholder="Icon (emoji)" value="🎁">
+        <select id="nr-category">
+          <option>Food</option><option>Voucher</option><option>Gift</option>
+        </select>
+      </div>
+      <button class="btn btn-primary full-btn" style="font-size:13px" onclick="adminAddReward()">+ Add Reward</button>
+    </div>
+    ${state.rewards.map(r=>`
+      <div class="reward-manage-item">
+        <span style="font-size:28px">${r.icon}</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:var(--green-900)">${r.name}</div>
+          <div style="font-size:11px;color:var(--text-muted)">⭐ ${r.points} pts · ${r.stock} in stock</div>
+        </div>
+        <button onclick="adminRemoveReward('${r.id}')" style="background:#fdf0f0;color:var(--red);border:none;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">Remove</button>
+      </div>
+    `).join("")}
+  `;
+}
+
+function adminAddReward() {
+  const name   = document.getElementById("nr-name")?.value?.trim();
+  const points = parseInt(document.getElementById("nr-points")?.value);
+  const stock  = parseInt(document.getElementById("nr-stock")?.value) || 10;
+  const icon   = document.getElementById("nr-icon")?.value || "🎁";
+  const cat    = document.getElementById("nr-category")?.value || "Food";
+  if (!name || !points) return;
+  state.rewards.push({ id:genId(), name, points, icon, category:cat, stock });
+  saveState();
+  showToast("Reward added!");
+  renderAdminRewards();
+}
+
+function adminRemoveReward(id) {
+  state.rewards = state.rewards.filter(r=>r.id!==id);
+  saveState();
+  showToast("Reward removed.");
+  renderAdminRewards();
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+renderHeader();
+renderBottomNav();
+renderHome();
+renderLearn();
+</script>
+</body>
+</html>
